@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel – Mobilni tim</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Theme color -->
+  <meta name="theme-color" content="#3498db">
+  
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Navigacija -->
+    <nav class="app-nav">
+      <a href="app.html" class="nav-link">📊 Evidencija</a>
+      <a href="admin.html" class="nav-link active">👤 Admin panel</a>
+      <button onclick="logout()" class="btn-logout">Odjavi se</button>
+    </nav>
+
+    <div class="app-header">
+      <h1>Admin Panel</h1>
+      <p>Dodavanje novih korisnika</p>
+    </div>
+
+    <!-- Statistika -->
+    <div class="stats-grid" id="statsGrid" style="display: none;">
+      <div class="stat-card">
+        <div class="stat-value" id="totalUsers">0</div>
+        <div class="stat-label">Ukupno korisnika</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalPsiholog">0</div>
+        <div class="stat-label">Psihologa</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalDefektolog">0</div>
+        <div class="stat-label">Defektologa</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalLogoped">0</div>
+        <div class="stat-label">Logopeda</div>
+      </div>
+    </div>
+
+    <!-- Forma za dodavanje korisnika -->
+    <div class="result-message" id="adminMessage" role="status" aria-live="polite"></div>
+
+    <form id="addUserForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="userFirstName">Ime <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="userFirstName" 
+            name="userFirstName" 
+            placeholder="Npr. Amar"
+            required 
+            aria-required="true"
+          >
+          <span class="field-error" id="error-userFirstName" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="userLastName">Prezime <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="userLastName" 
+            name="userLastName" 
+            placeholder="Npr. Begluk"
+            required 
+            aria-required="true"
+          >
+          <span class="field-error" id="error-userLastName" role="alert"></span>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="userEmail">Email korisnika <span class="required">*</span></label>
+          <input 
+            type="email" 
+            id="userEmail" 
+            name="userEmail" 
+            placeholder="novi.korisnik@gmail.com"
+            required 
+            aria-required="true"
+          >
+          <span class="field-error" id="error-userEmail" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="userPosition">Pozicija <span class="required">*</span></label>
+          <select id="userPosition" name="userPosition" required aria-required="true">
+            <option value="">-- Odaberite poziciju --</option>
+            <option value="Psiholog">Psiholog</option>
+            <option value="Defektolog">Defektolog</option>
+            <option value="Logoped">Logoped</option>
+          </select>
+          <span class="field-error" id="error-userPosition" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="userHomeSchool">Matična škola <span class="required">*</span></label>
+          <select id="userHomeSchool" name="userHomeSchool" required aria-required="true">
+            <option value="">-- Odaberite školu --</option>
+            <option value="JU &quot;Četvrta osnovna škola&quot;">JU "Četvrta osnovna škola"</option>
+            <option value="JU &quot;Deseta osnovna škola&quot;">JU "Deseta osnovna škola"</option>
+            <option value="JU &quot;Deveta osnovna škola&quot;">JU "Deveta osnovna škola"</option>
+            <option value="JU &quot;Druga osnovna škola&quot;">JU "Druga osnovna škola"</option>
+            <option value="JU &quot;Peta osnovna škola&quot;">JU "Peta osnovna škola"</option>
+            <option value="JU &quot;Prva osnovna škola&quot; Ilidža">JU "Prva osnovna škola" Ilidža</option>
+            <option value="JU &quot;Sedma osnovna škola&quot; Ilidža">JU "Sedma osnovna škola" Ilidža</option>
+            <option value="JU &quot;Šesta osnovna škola&quot;">JU "Šesta osnovna škola"</option>
+            <option value="JU &quot;Treća osnovna škola&quot;">JU "Treća osnovna škola"</option>
+            <option value="JU &quot;9. maj&quot; Pazarić">JU "9. maj" Pazarić</option>
+            <option value="JU Centar za odgoj, obrazovanje i rehabilitaciju &quot;Vladimir Nazor&quot;">JU Centar za odgoj, obrazovanje i rehabilitaciju "Vladimir Nazor"</option>
+            <option value="JU Centar za slušnu i govornu rehabilitaciju, Sarajevo">JU Centar za slušnu i govornu rehabilitaciju, Sarajevo</option>
+            <option value="JU Centar za slijepu i slabovidnu djecu i omladinu, Sarajevo">JU Centar za slijepu i slabovidnu djecu i omladinu, Sarajevo</option>
+            <option value="JU Osma osnovna škola &quot;Amer Ćenanović&quot; Ilidža">JU Osma osnovna škola "Amer Ćenanović" Ilidža</option>
+            <option value="JU Osnovna muzička i baletska škola &quot;Novo Sarajevo&quot;">JU Osnovna muzička i baletska škola "Novo Sarajevo"</option>
+            <option value="JU Osnovna muzička škola &quot;Mladen Pozajić&quot;">JU Osnovna muzička škola "Mladen Pozajić"</option>
+            <option value="JU Osnovna muzička škola Ilidža">JU Osnovna muzička škola Ilidža</option>
+            <option value="JU Srednja medicinska škola - Jezero Sarajevo">JU Srednja medicinska škola - Jezero Sarajevo</option>
+            <option value="JU Srednja škola primijenjenih umjetnosti">JU Srednja škola primijenjenih umjetnosti</option>
+            <option value="JU Zavod za specijalno obrazovanje i odgoj djece &quot;Mjedenica&quot;">JU Zavod za specijalno obrazovanje i odgoj djece "Mjedenica"</option>
+            <option value="JU OŠ &quot;6. mart&quot;">JU OŠ "6. mart"</option>
+            <option value="JU OŠ &quot;Aleksa Šantić&quot;">JU OŠ "Aleksa Šantić"</option>
+            <option value="JU OŠ &quot;Alija Nametak&quot;">JU OŠ "Alija Nametak"</option>
+            <option value="JU OŠ &quot;Aneks&quot;">JU OŠ "Aneks"</option>
+            <option value="JU OŠ &quot;Avdo Smajlović&quot;">JU OŠ "Avdo Smajlović"</option>
+            <option value="JU OŠ &quot;Behaudin Selmanović&quot;">JU OŠ "Behaudin Selmanović"</option>
+            <option value="JU OŠ &quot;Čamil Sijarić&quot;">JU OŠ "Čamil Sijarić"</option>
+            <option value="JU OŠ &quot;Čengić Vila I&quot;">JU OŠ "Čengić Vila I"</option>
+            <option value="JU OŠ &quot;Džemaludin Čaušević&quot;">JU OŠ "Džemaludin Čaušević"</option>
+            <option value="JU OŠ &quot;Edhem Mulabdić&quot;">JU OŠ "Edhem Mulabdić"</option>
+            <option value="JU OŠ &quot;Fatima Gunić&quot;">JU OŠ "Fatima Gunić"</option>
+            <option value="JU OŠ &quot;Grbavica I&quot;">JU OŠ "Grbavica I"</option>
+            <option value="JU OŠ &quot;Grbavica II&quot;">JU OŠ "Grbavica II"</option>
+            <option value="JU OŠ &quot;Hamdija Kreševljaković&quot;">JU OŠ "Hamdija Kreševljaković"</option>
+            <option value="JU OŠ &quot;Hasan Kaimija&quot;">JU OŠ "Hasan Kaimija"</option>
+            <option value="JU OŠ &quot;Hasan Kikić&quot;">JU OŠ "Hasan Kikić"</option>
+            <option value="JU OŠ &quot;Hašim Spahić&quot;">JU OŠ "Hašim Spahić"</option>
+            <option value="JU OŠ &quot;Hilmi ef. Šarić&quot; Tarčin">JU OŠ "Hilmi ef. Šarić" Tarčin</option>
+            <option value="JU OŠ &quot;Hrasno&quot;">JU OŠ "Hrasno"</option>
+            <option value="JU OŠ &quot;Isak Samokovlija&quot;">JU OŠ "Isak Samokovlija"</option>
+            <option value="JU OŠ &quot;Izet Šabić&quot;">JU OŠ "Izet Šabić"</option>
+            <option value="JU OŠ &quot;Kovačići&quot;">JU OŠ "Kovačići"</option>
+            <option value="JU OŠ &quot;Malta&quot;">JU OŠ "Malta"</option>
+            <option value="JU OŠ &quot;Mehmed-beg Kapetanović Ljubušak&quot;">JU OŠ "Mehmed-beg Kapetanović Ljubušak"</option>
+            <option value="JU OŠ &quot;Mehmedalija Mak Dizdar&quot;">JU OŠ "Mehmedalija Mak Dizdar"</option>
+            <option value="JU OŠ &quot;Meša Selimović&quot;">JU OŠ "Meša Selimović"</option>
+            <option value="JU OŠ &quot;Mirsad Prnjavorac&quot;">JU OŠ "Mirsad Prnjavorac"</option>
+            <option value="JU OŠ &quot;Mula Mustafa Bašeskija&quot;">JU OŠ "Mula Mustafa Bašeskija"</option>
+            <option value="JU OŠ &quot;Musa Ćazim Ćatić&quot;">JU OŠ "Musa Ćazim Ćatić"</option>
+            <option value="JU OŠ &quot;Mustafa Busuladžić&quot;">JU OŠ "Mustafa Busuladžić"</option>
+            <option value="JU OŠ &quot;Nafija Sarajlić&quot;">JU OŠ "Nafija Sarajlić"</option>
+            <option value="JU OŠ &quot;Osman Nakaš&quot;">JU OŠ "Osman Nakaš"</option>
+            <option value="JU OŠ &quot;Osman Nuri Hadžić&quot;">JU OŠ "Osman Nuri Hadžić"</option>
+            <option value="JU OŠ &quot;Podlugovi&quot;">JU OŠ "Podlugovi"</option>
+            <option value="JU OŠ &quot;Pofalići&quot;">JU OŠ "Pofalići"</option>
+            <option value="JU OŠ &quot;Porodice ef. Ramić&quot; Semizovac">JU OŠ "Porodice ef. Ramić" Semizovac</option>
+            <option value="JU OŠ &quot;Saburina&quot;">JU OŠ "Saburina"</option>
+            <option value="JU OŠ &quot;Safvet-beg Bašagić&quot;">JU OŠ "Safvet-beg Bašagić"</option>
+            <option value="JU OŠ &quot;Silvije Strahimir Kranjčević&quot;">JU OŠ "Silvije Strahimir Kranjčević"</option>
+            <option value="JU OŠ &quot;Skender Kulenović&quot;">JU OŠ "Skender Kulenović"</option>
+            <option value="JU OŠ &quot;Sokolje&quot;">JU OŠ "Sokolje"</option>
+            <option value="JU OŠ &quot;Stari Ilijaš&quot;">JU OŠ "Stari Ilijaš"</option>
+            <option value="JU OŠ &quot;Šejh Muhamed ef. Hadžijamaković&quot;">JU OŠ "Šejh Muhamed ef. Hadžijamaković"</option>
+            <option value="JU OŠ &quot;Šip&quot;">JU OŠ "Šip"</option>
+            <option value="JU OŠ &quot;Umihana Čuvidina&quot;">JU OŠ "Umihana Čuvidina"</option>
+            <option value="JU OŠ &quot;Velešićki heroji&quot;">JU OŠ "Velešićki heroji"</option>
+            <option value="JU OŠ &quot;Vladislav Skarić&quot;">JU OŠ "Vladislav Skarić"</option>
+            <option value="JU OŠ &quot;Vrhbosna&quot;">JU OŠ "Vrhbosna"</option>
+            <option value="JU OŠ &quot;Zahid Baručija&quot;">JU OŠ "Zahid Baručija"</option>
+            <option value="JU OŠ &quot;Zajko Delić&quot;">JU OŠ "Zajko Delić"</option>
+          </select>
+          <span class="field-error" id="error-userHomeSchool" role="alert"></span>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="userRole">Uloga u sistemu <span class="required">*</span></label>
+          <select id="userRole" name="userRole" required aria-required="true">
+            <option value="user">Obični korisnik</option>
+            <option value="admin">Administrator</option>
+          </select>
+          <span class="field-error" id="error-userRole" role="alert"></span>
+          <small style="color: var(--text-light); display: block; margin-top: 0.25rem;">
+            Administratori mogu dodavati nove korisnike
+          </small>
+        </div>
+      </div>
+
+      <div class="submit-wrapper">
+        <button type="submit" id="addUserBtn">Dodaj korisnika</button>
+      </div>
+    </form>
+
+    <!-- Prikaz kreiranih podataka -->
+    <div class="info-card" id="userCreatedCard" style="display: none;">
+      <h3 style="margin-top: 0; color: var(--success);">✅ Korisnik uspješno kreiran!</h3>
+      <div style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin: 1rem 0;">
+        <p style="margin: 0.5rem 0;"><strong>Ime i prezime:</strong> <span id="createdFullName"></span></p>
+        <p style="margin: 0.5rem 0;"><strong>Email:</strong> <span id="createdEmail"></span></p>
+        <p style="margin: 0.5rem 0;"><strong>Privremeni password:</strong> <code id="createdPassword" style="background: white; padding: 0.25rem 0.5rem; border-radius: 3px;"></code></p>
+        <p style="margin: 0.5rem 0;"><strong>Pozicija:</strong> <span id="createdPosition"></span></p>
+        <p style="margin: 0.5rem 0;"><strong>Matična škola:</strong> <span id="createdSchool"></span></p>
+      </div>
+      <button onclick="copyCredentials()" class="btn-secondary">📋 Kopiraj podatke</button>
+      <button onclick="hideCreatedCard()" class="btn-secondary" style="margin-left: 0.5rem;">Zatvori</button>
+    </div>
+
+    <!-- Lista korisnika (opcionalno) -->
+    <div id="usersListSection" style="display: none; margin-top: 2rem;">
+      <h2>Svi korisnici</h2>
+      <div id="usersList"></div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('✅ Service Worker registered:', registration.scope);
+          })
+          .catch(error => {
+            console.log('❌ Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>

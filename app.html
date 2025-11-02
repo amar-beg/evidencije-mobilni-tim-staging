@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evidencija rada – Mobilni tim</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+  
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Theme color for mobile browsers -->
+  <meta name="theme-color" content="#3498db">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Mobilni Tim">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Navigacija (samo za admina) -->
+    <nav class="app-nav" id="appNavigation" style="display: none;">
+      <a href="app.html" class="nav-link active">📊 Evidencija</a>
+      <a href="admin.html" id="adminNavLink" class="nav-link" style="display: none;">👤 Admin panel</a>
+    </nav>
+
+    <!-- User Info Banner -->
+    <div class="user-info-banner" id="userInfoBanner" style="display: none;">
+      <div class="user-info-content">
+        <div class="user-info-main">
+          <span class="user-icon">👤</span>
+          <div class="user-details">
+            <strong id="userFullName"></strong>
+            <span class="user-meta" id="userPosition"></span>
+          </div>
+        </div>
+        <div class="user-info-secondary">
+          <span id="userSchool"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-header">
+      <h1>Evidencija rada – Mobilni tim</h1>
+      <button class="btn-logout" id="logoutBtn" style="display: none;">Odjavi se</button>
+    </div>
+    
+    <!-- Tab navigacija -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="form">Nova evidencija</button>
+      <button class="tab-btn" data-tab="history">Raniji unosi</button>
+    </div>
+
+    <!-- Tab sadržaj: Nova evidencija -->
+    <div class="tab-content active" id="tab-form">
+    <div class="info-card">
+      <p><strong>Uputstvo:</strong> Popunite sva obavezna polja u formi za evidenciju vašeg rada.</p>
+      <p>Forma će automatski evidentirati vrijeme unosa. Svaka aktivnost mora biti povezana sa konkretnom školom i tipom rada.</p>
+      <p>Nakon uspješnog slanja, forma će se resetovati i biti spremna za sljedeći unos.</p>
+    </div>
+
+    <div class="auth-warning" id="authWarning">
+      <p><strong>Potrebna je prijava.</strong></p>
+      <p>Morate biti prijavljeni kako biste mogli pristupiti aplikaciji.</p>
+      <button class="btn-login" id="loginBtn">Prijavi se</button>
+    </div>
+
+    <form id="sessionForm" novalidate>
+      <div class="form-grid">
+        <!-- Vremenska oznaka - skriveno, ali se šalje u bazu -->
+        <input type="hidden" id="timestamp" name="timestamp">
+
+        <!-- Datum aktivnosti -->
+        <div class="form-group">
+          <label for="activityDate">Datum aktivnosti <span class="required">*</span></label>
+          <input type="date" id="activityDate" name="activityDate" required aria-required="true">
+          <span class="field-error" id="error-activityDate" role="alert"></span>
+        </div>
+
+        <!-- Škola -->
+        <div class="form-group">
+          <label for="school">Škola <span class="required">*</span></label>
+          <select id="school" name="school" required aria-required="true">
+            <option value="">-- Odaberite školu --</option>
+          </select>
+          <span class="field-error" id="error-school" role="alert"></span>
+        </div>
+
+        <!-- Trajanje (minute) - Dropdown -->
+        <div class="form-group">
+          <label for="minutes">Trajanje <span class="required">*</span></label>
+          <select id="minutes" name="minutes" required aria-required="true">
+            <option value="">-- Odaberite trajanje --</option>
+            <option value="15">15 min</option>
+            <option value="30">30 min</option>
+            <option value="45" selected>45 min (školski čas)</option>
+            <option value="60">60 min (1 sat)</option>
+            <option value="90">90 min (2 školska časa)</option>
+            <option value="120">120 min (2 sata)</option>
+          </select>
+          <span class="field-error" id="error-minutes" role="alert"></span>
+        </div>
+
+        <!-- RADIO BUTTONS SEKCIJA -->
+        <div class="form-group full-width radio-section">
+          <label class="section-label">Vrsta rada: <span class="required">*</span></label>
+          <div class="radio-group">
+            <!-- Opcija 1: Prisustvovanje -->
+            <div class="radio-item">
+              <input type="radio" id="attendance" name="activityType" value="attendance">
+              <label for="attendance" class="radio-label">Prisustvovanje:</label>
+              <select id="attendanceType" name="attendanceType" disabled>
+                <option value="">-- Izaberite --</option>
+                <option value="odjeljenskom_vijecu">Odjeljenskom vijeću škole</option>
+                <option value="nastavnickom_vijecu">Nastavničkom vijeću škole</option>
+                <option value="multisektorskom_sastanku">Multisektorskom sastanku</option>
+              </select>
+            </div>
+
+            <!-- Opcija 2: Kontakt rad (DEFAULT) -->
+            <div class="radio-item">
+              <input type="radio" id="contact" name="activityType" value="contact" checked>
+              <label for="contact" class="radio-label">Kontakt rad:</label>
+              <select id="contactType" name="contactType">
+                <option value="direktni" selected>Direktni</option>
+                <option value="online">Online</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONDITIONAL POLJA - aktivna samo za "Kontakt rad" -->
+        <!-- Kategorija korisnika -->
+        <div class="form-group" id="userCategoryGroup">
+          <label for="userCategory">Kategorija korisnika <span class="required">*</span></label>
+          <select id="userCategory" name="userCategory" required aria-required="true">
+            <option value="">-- Odaberite kategoriju --</option>
+            <option value="s_ucenikom">S učenikom</option>
+            <option value="s_roditeljima">S roditeljima</option>
+            <option value="s_nastavnikom">S nastavnikom</option>
+            <option value="s_nastavnicima">S nastavnicima</option>
+            <option value="s_uciteljem">S učiteljem</option>
+            <option value="s_uciteljima">S učiteljima</option>
+            <option value="s_strucnom_sluzbom">S stručnom službom</option>
+          </select>
+          <span class="field-error" id="error-userCategory" role="alert"></span>
+        </div>
+
+        <!-- U okruženju -->
+        <div class="form-group" id="environmentGroup">
+          <label for="environment">U okruženju <span class="required">*</span></label>
+          <select id="environment" name="environment" required aria-required="true">
+            <option value="">-- Izaberite --</option>
+            <option value="individualno">Individualno</option>
+            <option value="u_grupi">U grupi</option>
+          </select>
+          <span class="field-error" id="error-environment" role="alert"></span>
+        </div>
+
+        <!-- Inicijali -->
+        <div class="form-group" id="initialsGroup">
+          <label for="initials">Inicijali</label>
+          <input type="text" id="initials" name="initials" placeholder="npr. A.B." maxlength="10">
+          <span class="field-error" id="error-initials" role="alert"></span>
+        </div>
+
+        <!-- Dodatno (opcionalno) -->
+        <div class="form-group full-width">
+          <label for="note">Dodatno (opcionalno)</label>
+          <input type="text" id="note" name="note" placeholder="Dodatne napomene...">
+          <span class="field-error" id="error-note" role="alert"></span>
+        </div>
+
+        <!-- Opis aktivnosti - OBRISANO, zamijenjeno sa "Dodatno" iznad -->
+      </div>
+
+      <div class="submit-wrapper">
+        <span class="field-error" id="formValidationError" role="alert"></span>
+        <button type="submit" id="submitBtn">Pošalji evidenciju</button>
+        <div class="result-message" id="resultMessage" role="status" aria-live="polite"></div>
+      </div>
+    </form>
+    </div>
+    <!-- Kraj tab-form -->
+
+    <!-- Tab sadržaj: Raniji unosi -->
+    <div class="tab-content" id="tab-history">
+      <div class="history-header">
+        <h2>Raniji unosi</h2>
+        <div class="history-tabs">
+          <button class="history-tab active" id="tab-today" onclick="loadHistoryTab('today')">
+            📅 Danas
+          </button>
+          <button class="history-tab" id="tab-current-month" onclick="loadHistoryTab('current_month')">
+            📊 Tekući mjesec
+          </button>
+          <button class="history-tab" id="tab-previous-month" onclick="loadHistoryTab('previous_month')">
+            📁 Prethodni mjesec
+          </button>
+        </div>
+      </div>
+
+      <div class="history-info">
+        <p>Ovdje možete pregledati, urediti ili obrisati vaše ranije unesene evidencije.</p>
+      </div>
+
+      <!-- Loading state -->
+      <div class="loading-state" id="loadingState">
+        <p>Učitavam podatke...</p>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="emptyState">
+        <p>Nemate još unesenih evidencija.</p>
+      </div>
+
+      <!-- Tabela sa podacima -->
+      <div class="table-wrapper" id="tableWrapper">
+        <table class="history-table" id="historyTable">
+          <thead>
+            <tr>
+              <th>Datum</th>
+              <th>Škola</th>
+              <th>Rad</th>
+              <th>Trajanje</th>
+              <th>Akcije</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <!-- Podaci će biti ubačeni dinamički -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Kraj tab-history -->
+
+  </div>
+
+  <!-- Modal za uređivanje -->
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Uredi evidenciju</h2>
+        <button class="modal-close" id="closeModal">&times;</button>
+      </div>
+      <form id="editForm">
+        <div class="form-grid">
+          <input type="hidden" id="edit-id" name="id">
+          
+          <!-- Datum aktivnosti -->
+          <div class="form-group">
+            <label for="edit-activityDate">Datum aktivnosti <span class="required">*</span></label>
+            <input type="date" id="edit-activityDate" name="activityDate" required>
+          </div>
+
+          <!-- Škola -->
+          <div class="form-group">
+            <label for="edit-school">Škola <span class="required">*</span></label>
+            <select id="edit-school" name="school" required>
+              <option value="">-- Odaberite školu --</option>
+            </select>
+          </div>
+
+          <!-- Trajanje -->
+          <div class="form-group">
+            <label for="edit-minutes">Trajanje <span class="required">*</span></label>
+            <select id="edit-minutes" name="minutes" required>
+              <option value="">-- Odaberite trajanje --</option>
+              <option value="15">15 min</option>
+              <option value="30">30 min</option>
+              <option value="45">45 min (školski čas)</option>
+              <option value="60">60 min (1 sat)</option>
+              <option value="90">90 min (2 školska časa)</option>
+              <option value="120">120 min (2 sata)</option>
+            </select>
+          </div>
+
+          <!-- RADIO BUTTONS SEKCIJA -->
+          <div class="form-group full-width radio-section">
+            <label class="section-label">Vrsta rada: <span class="required">*</span></label>
+            <div class="radio-group">
+              <!-- Opcija 1: Prisustvovanje -->
+              <div class="radio-item">
+                <input type="radio" id="edit-attendance" name="edit-activityType" value="attendance">
+                <label for="edit-attendance" class="radio-label">Prisustvovanje:</label>
+                <select id="edit-attendanceType" name="edit-attendanceType" disabled>
+                  <option value="">-- Izaberite --</option>
+                  <option value="odjeljenskom_vijecu">Odjeljenskom vijeću škole</option>
+                  <option value="nastavnickom_vijecu">Nastavničkom vijeću škole</option>
+                  <option value="multisektorskom_sastanku">Multisektorskom sastanku</option>
+                </select>
+              </div>
+
+              <!-- Opcija 2: Kontakt rad -->
+              <div class="radio-item">
+                <input type="radio" id="edit-contact" name="edit-activityType" value="contact" checked>
+                <label for="edit-contact" class="radio-label">Kontakt rad:</label>
+                <select id="edit-contactType" name="edit-contactType">
+                  <option value="direktni">Direktni</option>
+                  <option value="online">Online</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONDITIONAL POLJA - aktivna samo za "Kontakt rad" -->
+          <!-- Kategorija korisnika -->
+          <div class="form-group" id="edit-userCategoryGroup">
+            <label for="edit-userCategory">Kategorija korisnika <span class="required">*</span></label>
+            <select id="edit-userCategory" name="edit-userCategory" required>
+              <option value="">-- Odaberite kategoriju --</option>
+              <option value="s_ucenikom">S učenikom</option>
+              <option value="s_roditeljima">S roditeljima</option>
+              <option value="s_nastavnikom">S nastavnikom</option>
+              <option value="s_nastavnicima">S nastavnicima</option>
+              <option value="s_uciteljem">S učiteljem</option>
+              <option value="s_uciteljima">S učiteljima</option>
+              <option value="s_strucnom_sluzbom">S stručnom službom</option>
+            </select>
+          </div>
+
+          <!-- U okruženju -->
+          <div class="form-group" id="edit-environmentGroup">
+            <label for="edit-environment">U okruženju <span class="required">*</span></label>
+            <select id="edit-environment" name="edit-environment" required>
+              <option value="">-- Izaberite --</option>
+              <option value="individualno">Individualno</option>
+              <option value="u_grupi">U grupi</option>
+            </select>
+          </div>
+
+          <!-- Inicijali -->
+          <div class="form-group" id="edit-initialsGroup">
+            <label for="edit-initials">Inicijali</label>
+            <input type="text" id="edit-initials" name="edit-initials" placeholder="npr. A.B." maxlength="10">
+          </div>
+
+          <!-- Dodatno (opcionalno) -->
+          <div class="form-group full-width">
+            <label for="edit-note">Dodatno (opcionalno)</label>
+            <input type="text" id="edit-note" name="edit-note" placeholder="Dodatne napomene...">
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="cancelEdit">Otkaži</button>
+          <button type="submit" class="btn-primary" id="saveEdit">Sačuvaj izmjene</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('✅ Service Worker registered:', registration.scope);
+          })
+          .catch(error => {
+            console.log('❌ Service Worker registration failed:', error);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
