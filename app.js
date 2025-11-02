@@ -1,13 +1,13 @@
 // ===== COGNITO KONFIGURACIJA =====
 const COGNITO_DOMAIN = 'us-east-1vfdixxwye.auth.us-east-1.amazoncognito.com';
-const COGNITO_CLIENT_ID = '1ont4c9hffc2c5k72li20f2os'; // ← ISPRAVAN Client ID!
+const COGNITO_CLIENT_ID = 'emnukq3526cng4mbabp3vqak6'; // ← ISPRAVAN Client ID!
 
 // ⚠️ SECURITY: Client Secret je UKLONJEN!
 // Public client apps (frontend) NE SMIJU imati client secret!
 // Client Secret je samo za backend servere koji mogu čuvati tajne.
 const COGNITO_CLIENT_SECRET = null; // Public client - no secret needed
 
-const REDIRECT_URI = 'https://mobilni-tim.evidencije.com';
+const REDIRECT_URI = 'https://d3og0hrm88210h.cloudfront.net/app.html';
 const SCOPE = 'openid email profile aws.cognito.signin.user.admin';
 
 // ===== n8n WEBHOOK URLs =====

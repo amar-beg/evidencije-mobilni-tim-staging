@@ -1,0 +1,99 @@
+name: Deploy to S3 and CloudFront
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  BUILD_DIR: .
+  FALLBACK_PATHS: "/app.html"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install AWS CLI
+        uses: unfor19/install-aws-cli-action@v1
+
+      - name: Sync to S3
+        shell: bash
+        run: |
+          set -euo pipefail
+          BUCKET="${{ secrets.S3_BUCKET }}"
+          BUCKET="${BUCKET#s3://}"
+          BUCKET="${BUCKET%%/*}"
+          echo "Sync to bucket: $BUCKET"
+          aws s3 sync "${{ env.BUILD_DIR }}" "s3://${BUCKET}" \
+            --delete \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude ".gitignore" \
+            --exclude "README.md"
+
+      - name: Compute changed paths
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+
+          # ako je prvi push ili unknown parent, pokušaj naći lokalni parent
+          if [[ "$BEFORE" =~ ^0+$ ]]; then
+            BEFORE="$(git rev-list --max-count=1 "${AFTER}^" || true)"
+          fi
+
+          # dovuci reference da git diff sigurno radi
+          git fetch --no-tags --prune origin +refs/heads/*:refs/remotes/origin/*
+
+          # skupi dodane, izmijenjene i rename-ovane
+          if [[ -n "${BEFORE}" ]]; then
+            mapfile -t FILES < <(git diff --name-only --diff-filter=AMR "${BEFORE}" "${AFTER}")
+          else
+            FILES=()
+          fi
+
+          # filtriraj neprodukcijske fajlove
+          PATHS=()
+          for f in "${FILES[@]}"; do
+            [[ "$f" == .git/* ]] && continue
+            [[ "$f" == .github/* ]] && continue
+            [[ "$f" == README.* || "$f" == README.md ]] && continue
+            [ -d "$f" ] && continue
+            PATHS+=("/${f}")
+          done
+
+          if [ ${#PATHS[@]} -eq 0 ]; then
+            echo "paths=${{ env.FALLBACK_PATHS }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # dedup i ograniči batch
+          uniq_paths=$(printf "%s\n" "${PATHS[@]}" | awk '!seen[$0]++')
+          echo "$uniq_paths" | head -n 30 | paste -sd' ' - > /tmp/paths.txt
+          echo "paths=$(cat /tmp/paths.txt)" >> "$GITHUB_OUTPUT"
+
+      - name: Invalidate CloudFront
+        shell: bash
+        run: |
+          set -euo pipefail
+          PATHS="${{ steps.changes.outputs.paths }}"
+          echo "Invalidating paths: $PATHS"
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}" \
+            --paths $PATHS
