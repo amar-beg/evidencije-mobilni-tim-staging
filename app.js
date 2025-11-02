@@ -11,7 +11,7 @@ const REDIRECT_URI = 'https://d3og0hrm88210h.cloudfront.net/app.html';
 const SCOPE = 'openid email profile aws.cognito.signin.user.admin';
 
 // ===== n8n WEBHOOK URLs =====
-const N8N_WEBHOOK_URL = 'https://amar.prodesign387.com/webhook/submit-session';
+const N8N_WEBHOOK_URL = 'https://l0lapncq4d.execute-api.us-east-1.amazonaws.com/submit-session';
 const N8N_HISTORY_URL = 'https://amar.prodesign387.com/webhook/get-sessions';
 const N8N_UPDATE_URL = 'https://amar.prodesign387.com/webhook/update-session';
 const N8N_DELETE_URL = 'https://amar.prodesign387.com/webhook/delete-session';
